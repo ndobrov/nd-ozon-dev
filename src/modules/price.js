@@ -1,30 +1,33 @@
 import getData from "./getData";
 import renderGoods from "./renderGoods";
-import { priceFilter } from "./filter"
+import { priceFilter, hotSaleFilter } from "./filter"
 
 const price = () => {
     const minPrice = document.querySelector('#min');
     const maxPrice = document.querySelector('#max');
+    const checkboxInput = document.querySelector('#discount-checkbox');
+    const checkboxSpan = document.querySelector('.filter-check_checkmark');
 
-    console.log(minPrice, maxPrice);
-    let minValue = 0;
-    let maxValue = 40000;
-
-    minPrice.addEventListener('input', (event) => {
-        let value = +event.target.value;
-        value ? minValue = value : minValue;
-        
-        getData(minValue).then(data => {
-            renderGoods(priceFilter({data, minValue, maxValue}));
+    minPrice.addEventListener('input', () => {        
+        getData().then(data => {
+            renderGoods(priceFilter(hotSaleFilter(data, checkboxInput.checked), minPrice.value, maxPrice.value));
         });
     })
 
-    maxPrice.addEventListener('input', (event) => {
-        let value = +event.target.value;
-        value ? maxValue = value : maxValue;
-        
-        getData(maxValue).then((data) => {
-            renderGoods(priceFilter({data, minValue, maxValue}));
+    maxPrice.addEventListener('input', () => {
+        getData().then(data => {
+            renderGoods(priceFilter(hotSaleFilter(data, checkboxInput.checked), minPrice.value, maxPrice.value));
+        });
+    });
+
+    checkboxInput.addEventListener('change', () => {
+        if (checkboxInput.checked) {
+            checkboxSpan.classList.add('checked');
+        } else {
+            checkboxSpan.classList.remove('checked');
+        }
+        getData().then(data => {
+            renderGoods(priceFilter(hotSaleFilter(data, checkboxInput.checked), minPrice.value, maxPrice.value));
         });
     })
 }
